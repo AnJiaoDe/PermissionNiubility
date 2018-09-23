@@ -1,3 +1,6 @@
+ 微信公众号
+ ![这里写图片描述](https://img-blog.csdn.net/20180428174200810?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NvbmZ1c2luZ19hd2FrZW5pbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
 [GitHub](https://github.com/AnJiaoDe/Permission)
 
 [APK](https://github.com/AnJiaoDe/Permission/blob/master/app/build/outputs/apk/app-debug.apk)
