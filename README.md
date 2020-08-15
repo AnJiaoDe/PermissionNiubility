@@ -1,14 +1,31 @@
-  微信公众号
-  
- ![这里写图片描述](http://upload-images.jianshu.io/upload_images/11866078-a6969884111cd3b4?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
- 
-[简书](https://www.jianshu.com/u/b8159d455c69)
+文章目录
 
-[APK](https://github.com/AnJiaoDe/Permission/blob/master/app/build/outputs/apk/app-debug.apk)
+GitHub:https://github.com/AnJiaoDe/PermissionNiubility
 
-将libray模块复制到项目中,或者直接在build.gradle中依赖:
+使用方法
 
-```
+3.调用方式：
+
+注意：记得去gayhub查看最新版本，最新版本最niubility
+
+1.全部允许
+2.拒绝
+3.拒绝
+4.用户拒绝并且选中了不再询问，弹窗让用户去授权
+5.用户同意了授权，闲的难受去关闭了授权
+
+实现原理：
+
+源码：
+
+欢迎联系、指正、批评
+
+## [GitHub:https://github.com/AnJiaoDe/PermissionNiubility](https://github.com/AnJiaoDe/PermissionNiubility)
+
+## 使用方法
+1.工程目录下的build.gradle中添加代码：
+
+```java
 allprojects {
 		repositories {
 			
@@ -16,19 +33,47 @@ allprojects {
 		}
 	}
 ```
+2.直接在需要使用的模块的build.gradle中添加代码：
 
+```java
+api 'com.github.AnJiaoDe:PermissionNiubility:V1.0.2'
 ```
-dependencies {
-	              compile 'com.github.AnJiaoDe:Permission:V1.0.0'
 
+## 3.调用方式：
 
-	}
+可以一个个请求：
+```java
+ PermissionUtils.checkPermission(MainActivity.this,
+                        new String[]{Manifest.permission.CAMERA},
+                        new OnPermissionCallback(MainActivity.this) {
+                    @Override
+                    public void onPermissionHave() {
+                        PermissionUtils.checkPermission(MainActivity.this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                new OnPermissionCallback(MainActivity.this) {
+                            @Override
+                            public void onPermissionHave() {
+
+                            }
+                        });
+                    }
+                });
 ```
-**注意：如果sync报错，是因为和com.android.tools.build:gradle 3.0有关，**
-**可以改将compile改为implementation 或者api** 
+也可以同时请求：
+```java
+      PermissionUtils.checkPermission(MainActivity.this,
+                        new String[]{Manifest.permission.CAMERA,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        new OnPermissionCallback(MainActivity.this) {
+                    @Override
+                    public void onPermissionHave() {
+                    }
+                });
+```
 
-
+## 注意：记得去gayhub查看最新版本，最新版本最niubility
 Android 6.0以上，危险权限必须经过动态请求，危险权限分组图
+
 ![在这里插入图片描述](https://img-blog.csdn.net/20180923113051590?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NvbmZ1c2luZ19hd2FrZW5pbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 
@@ -36,256 +81,189 @@ Android 6.0以上，危险权限必须经过动态请求，危险权限分组图
 ## 1.全部允许
 
 
-![Image text](gif/1.gif)
+![在这里插入图片描述](https://img-blog.csdn.net/20180923113205889?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NvbmZ1c2luZ19hd2FrZW5pbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+
 
 ## 2.拒绝
 
-![Image text](gif/2.gif)
+![在这里插入图片描述](https://img-blog.csdn.net/2018092311322513?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NvbmZ1c2luZ19hd2FrZW5pbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 ## 3.拒绝
 
-![Image text](gif/3.gif)
+![在这里插入图片描述](https://img-blog.csdn.net/20180923113241448?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NvbmZ1c2luZ19hd2FrZW5pbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 ## 4.用户拒绝并且选中了不再询问，弹窗让用户去授权
 
-![Image text](gif/4.gif)
+![在这里插入图片描述](https://img-blog.csdn.net/20180923113304837?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NvbmZ1c2luZ19hd2FrZW5pbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 ## 5.用户同意了授权，闲的难受去关闭了授权
 
-![Image text](gif/5.gif)
+## 实现原理：
 
-使用方法:
+启动一个全透明的Activity去请求权限，回调对象用单例类持有
+## 源码：
+PermissionUtils：
 
-```
-public class MainActivity extends PermissionActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPermissionCAMERA(new OnPermissionRequestListener() {
-                    @Override
-                    public void onPermissionHave() {
-                        showToast("用户同意了相机权限");
-
-                        checkPermissionWRITE_EXTERNAL_STORAGE(new OnPermissionRequestListener() {
-                            @Override
-                            public void onPermissionHave() {
-                                showToast("用户同意了存储权限,可以执行拍照操作了");
-
-                            }
-
-                            @Override
-                            public void onPermissionRefuse() {
-                                showToast("用户拒绝了存储权限");
-
-                            }
-
-                            @Override
-                            public void onPermissionRefuseNoAsk() {
-                                showToast("用户拒绝了存储权限并且选中了不再询问");
-
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onPermissionRefuse() {
-                        showToast("用户拒绝了相机权限");
-
-                    }
-
-                    @Override
-                    public void onPermissionRefuseNoAsk() {
-                        showToast("用户拒绝了相机权限并且选中了不再询问");
-
-                    }
-                });
-            }
-        });
-
-       //或者
-//        checkPermission(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                "存储权限已被禁用","拍照功能必须打开存储权限，否则无法使用", new OnPermissionRequestListener() {
-//
-//                    @Override
-//                    public void onPermissionHave() {
-//
-//                        showToast("用户同意了存储权限");
-//
-//
-//                    }
-//
-//                    @Override
-//                    public void onPermissionRefuse() {
-//                        showToast("用户拒绝了存储权限");
-//
-//                    }
-//
-//                    @Override
-//                    public void onPermissionRefuseNoAsk() {
-//                        showToast("用户拒绝了存储权限并且选中了不再询问");
-//
-//                    }
-//                });
-    }
-
-    @Override
-    public void onClick(View v) {
-
+```java
+public class PermissionUtils {
+    public static void checkPermission(Activity activity,String[] permissions, OnPermissionCallback onPermissionCallback) {
+       for(String permission:permissions){
+           if(ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED){
+               PermissionManager.getInstance().setOnPermissionCallback(onPermissionCallback);
+               Intent intent=new Intent(activity,PermissionActivity.class);
+               Bundle bundle=new Bundle();
+               bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS,permissions);
+               intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS,bundle);
+               activity.startActivity(intent);
+               return;
+           }
+       }
+       onPermissionCallback.onPermissionHave();
     }
 }
-
 ```
-源码：
 
-```
-public abstract class PermissionActivity extends AppCompatActivity implements View.OnClickListener {
-    private String toast_perm_refuse,dialog_perm_refuse_noask;
-    private OnPermissionRequestListener onPermissionHaveListener;
+PermissionActivity:
 
-
-    public <T extends View> T getViewByID(@IdRes int id) {
-        return (T) findViewById(id);
+```java
+public class PermissionActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        Bundle bundle = getIntent().getBundleExtra(PermissionManager.INTENT_KEY_PERMISSIONS);
+        String[] permissions=null;
+        if (bundle != null)
+            permissions = bundle.getStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS);
+        if (permissions != null && permissions.length > 0)
+            ActivityCompat.requestPermissions(this, permissions, 1001);
     }
-
-
-    //??????????????????????????????????????????????????????????????????????
-    public String nullToString(Object object) {
-        return object == null ? "" : object.toString();
-    }
-
-
-    //??????????????????????????????????????????????????????????????????????
-    public void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
-
-    public void showToast(int string_id) {
-        Toast.makeText(this, getResources().getString(string_id), Toast.LENGTH_SHORT).show();
-    }
-
-
-    public void startAppcompatActivity(Class<?> cls) {
-        startActivity(new Intent(this, cls));
-    }
-
-
-    /*
-            6.0权限检查存储权限
-             */
-    public void checkPermissionWRITE_EXTERNAL_STORAGE( OnPermissionRequestListener onPermissionHaveListener) {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        this.toast_perm_refuse = "存储权限已被禁用";
-        this.dialog_perm_refuse_noask="存储权限被禁用，您将无法使用相机、相册、图片下载等功能";
-
-        this.onPermissionHaveListener = onPermissionHaveListener;
-
-    }
-    /*
-            6.0权限检查相机权限
-             */
-    public void checkPermissionCAMERA( OnPermissionRequestListener onPermissionHaveListener) {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
-        this.toast_perm_refuse = "相机权限已被禁用";
-        this.dialog_perm_refuse_noask="相机权限被禁用，您将无法使用相机进行拍照";
-
-        this.onPermissionHaveListener = onPermissionHaveListener;
-
-    }
-    /*
-            6.0权限检查
-             */
-    public void checkPermission(String[] permission, String toast_perm_refuse,String dialog_perm_refuse_noask, OnPermissionRequestListener onPermissionHaveListener) {
-        ActivityCompat.requestPermissions(this, permission, 1);
-        this.toast_perm_refuse = toast_perm_refuse;
-        this.dialog_perm_refuse_noask=dialog_perm_refuse_noask;
-
-        this.onPermissionHaveListener = onPermissionHaveListener;
-
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
+        OnPermissionCallback onPermissionCallback = PermissionManager.getInstance().getOnPermissionCallback();
         for (int i = 0; i < permissions.length; i++) {
-
-
-            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                if (onPermissionHaveListener != null) {
-                    onPermissionHaveListener.onPermissionHave();
-                }
-                continue;
-
-            }
-
+            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) continue;
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                 //在用户已经拒绝授权的情况下，如果shouldShowRequestPermissionRationale返回false则
                 // 可以推断出用户选择了“不在提示”选项，在这种情况下需要引导用户至设置页手动授权
+                finish();
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
-                    if (onPermissionHaveListener != null) {
-                        onPermissionHaveListener.onPermissionRefuseNoAsk();
-                    }
-                    //解释原因，并且引导用户至设置页手动授权
-                    new AlertDialog.Builder(this)
-                            .setMessage(dialog_perm_refuse_noask)
-                            .setPositiveButton("去授权", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //引导用户至设置页手动授权
-                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                    Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                    intent.setData(uri);
-                                    startActivity(intent);
-                                }
-                            })
-                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //引导用户手动授权，权限请求失败
-                                }
-                            }).show();
-
+                    if (onPermissionCallback != null)
+                        onPermissionCallback.onPermissionRefuseNoAsk();
                 } else {
                     //权限请求失败，但未选中“不再提示”选项
-                    showToast(toast_perm_refuse);
-                    if (onPermissionHaveListener != null) {
-                        onPermissionHaveListener.onPermissionRefuse();
-                    }
+                    if (onPermissionCallback != null)
+                        onPermissionCallback.onPermissionRefuse();
                 }
-                break;
+                return;
             }
-
         }
-
-
-    }
-
-    public interface OnPermissionRequestListener {
-        public void onPermissionHave();
-
-        public void onPermissionRefuse();
-
-        public void onPermissionRefuseNoAsk();
+        finish();
+        if (onPermissionCallback != null)
+            onPermissionCallback.onPermissionHave();
     }
 }
 
 ```
-[GitHub](https://github.com/AnJiaoDe)
+OnPermissionCallback：
 
-关注专题[Android开发常用开源库](https://www.jianshu.com/c/3ff4b3951dc5)
+```java
+public abstract class OnPermissionCallback {
+    private Activity activity;
 
-[简书](https://www.jianshu.com/u/b8159d455c69)
+    public OnPermissionCallback(Activity activity) {
+        this.activity = activity;
+    }
 
-  微信公众号
- ![这里写图片描述](http://upload-images.jianshu.io/upload_images/11866078-a6969884111cd3b4?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+    public abstract void onPermissionHave();
+
+    public void onPermissionRefuse() {
+    }
+
+    public void onPermissionRefuseNoAsk() {
+        authorize();
+    }
+    public String getAuthorizeDialogButtonPositive(){
+        return "去授权";
+    }
+    public String getAuthorizeDialogMessage(){
+        return "禁用这些权限，您可能无法使用某些功能";
+    }
+    public String getAuthorizeDialogButtonNegative(){
+        return "取消";
+    }
+    public void authorize() {
+        //解释原因，并且引导用户至设置页手动授权
+        new AlertDialog.Builder(activity)
+                .setMessage(getAuthorizeDialogMessage())
+                .setPositiveButton(getAuthorizeDialogButtonPositive(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //引导用户至设置页手动授权
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package",activity.getPackageName(), null);
+                        intent.setData(uri);
+                        activity.startActivity(intent);
+                    }
+                })
+                .setNegativeButton(getAuthorizeDialogButtonNegative(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //引导用户手动授权，权限请求失败
+                    }
+                }).show();
+    }
+}
+
+```
+PermissionManager：
+
+```java
+class PermissionManager {
+    public static final String INTENT_KEY_PERMISSIONS = "intent_key_permissions";
+    public static final String BUNDLE_KEY_PERMISSIONS = "bundle_key_permissions";
+    private OnPermissionCallback onPermissionCallback;
+    private PermissionManager() {
+    }
+
+    private static class PermissionManagerHolder {
+        private static PermissionManager instance = new PermissionManager();
+    }
+
+    public static PermissionManager getInstance() {
+        return PermissionManagerHolder.instance;
+    }
+
+    public OnPermissionCallback getOnPermissionCallback() {
+        return onPermissionCallback;
+    }
+
+    public void setOnPermissionCallback(OnPermissionCallback onPermissionCallback) {
+        this.onPermissionCallback = onPermissionCallback;
+    }
+}
+
+```
+## 欢迎联系、指正、批评
+
+
+
+Github:[https://github.com/AnJiaoDe](https://github.com/AnJiaoDe)
+
+简书：[https://www.jianshu.com/u/b8159d455c69](https://www.jianshu.com/u/b8159d455c69)
+
+CSDN：[https://blog.csdn.net/confusing_awakening](https://blog.csdn.net/confusing_awakening)
+
+ffmpeg入门教程:[https://www.jianshu.com/p/042c7847bd8a](https://www.jianshu.com/p/042c7847bd8a)
+
+ 微信公众号
+ ![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzExODY2MDc4LWZjZmJiNDUxNzVmOTlkZTA)
 
 QQ群
-![这里写图片描述](http://upload-images.jianshu.io/upload_images/11866078-8fa028ef79948e75?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzExODY2MDc4LWEzMWZmNDBhYzY4NTBhNmQ)
 
