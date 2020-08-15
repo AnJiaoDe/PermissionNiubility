@@ -1,11 +1,15 @@
 package com.cy.permissionniubility;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 /**
@@ -24,6 +28,7 @@ public abstract class OnPermissionCallback {
         this.activity = activity;
     }
 
+
     public abstract void onPermissionHave();
 
     public void onPermissionRefuse() {
@@ -32,15 +37,19 @@ public abstract class OnPermissionCallback {
     public void onPermissionRefuseNoAsk() {
         authorize();
     }
-    public String getAuthorizeDialogButtonPositive(){
+
+    public String getAuthorizeDialogButtonPositive() {
         return "去授权";
     }
-    public String getAuthorizeDialogMessage(){
+
+    public String getAuthorizeDialogMessage() {
         return "禁用这些权限，您可能无法使用某些功能";
     }
-    public String getAuthorizeDialogButtonNegative(){
+
+    public String getAuthorizeDialogButtonNegative() {
         return "取消";
     }
+
     public void authorize() {
         //解释原因，并且引导用户至设置页手动授权
         new AlertDialog.Builder(activity)
@@ -50,7 +59,7 @@ public abstract class OnPermissionCallback {
                     public void onClick(DialogInterface dialog, int which) {
                         //引导用户至设置页手动授权
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package",activity.getPackageName(), null);
+                        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
                         intent.setData(uri);
                         activity.startActivity(intent);
                     }

@@ -1,5 +1,10 @@
 package com.cy.permissionniubility;
 
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @Description:
  * @Author: cy
@@ -9,11 +14,12 @@ package com.cy.permissionniubility;
  * @UpdateRemark:
  * @Version: 1.0
  */
-class PermissionManager {
+ class PermissionManager {
     public static final String INTENT_KEY_PERMISSIONS = "intent_key_permissions";
     public static final String BUNDLE_KEY_PERMISSIONS = "bundle_key_permissions";
-    private OnPermissionCallback onPermissionCallback;
+    private List<OnPermissionCallback> listCallback;
     private PermissionManager() {
+        listCallback=new ArrayList<>();
     }
 
     private static class PermissionManagerHolder {
@@ -24,11 +30,7 @@ class PermissionManager {
         return PermissionManagerHolder.instance;
     }
 
-    public OnPermissionCallback getOnPermissionCallback() {
-        return onPermissionCallback;
-    }
-
-    public void setOnPermissionCallback(OnPermissionCallback onPermissionCallback) {
-        this.onPermissionCallback = onPermissionCallback;
+    public List<OnPermissionCallback> getListCallback() {
+        return listCallback;
     }
 }

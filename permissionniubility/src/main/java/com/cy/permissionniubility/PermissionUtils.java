@@ -17,18 +17,18 @@ import androidx.core.app.ActivityCompat;
  * @Version: 1.0
  */
 public class PermissionUtils {
-    public static void checkPermission(Activity activity,String[] permissions, OnPermissionCallback onPermissionCallback) {
-       for(String permission:permissions){
-           if(ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED){
-               PermissionManager.getInstance().setOnPermissionCallback(onPermissionCallback);
-               Intent intent=new Intent(activity,PermissionActivity.class);
-               Bundle bundle=new Bundle();
-               bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS,permissions);
-               intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS,bundle);
-               activity.startActivity(intent);
-               return;
-           }
-       }
-       onPermissionCallback.onPermissionHave();
+    public static void checkPermission(Activity activity, String[] permissions, OnPermissionCallback onPermissionCallback) {
+        for (String permission : permissions) {
+            if (ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+                PermissionManager.getInstance().getListCallback().add(onPermissionCallback);
+                Intent intent = new Intent(activity, PermissionActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS, permissions);
+                intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
+                activity.startActivity(intent);
+                return;
+            }
+        }
+        onPermissionCallback.onPermissionHave();
     }
 }
