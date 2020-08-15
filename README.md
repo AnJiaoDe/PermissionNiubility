@@ -4,7 +4,9 @@ GitHub:https://github.com/AnJiaoDe/PermissionNiubility
 
 使用方法
 
-3.调用方式：
+3.调用方式( 必须在UI线程使用)：
+
+OnPermissionCallback 中可以override授权对框框和样式
 
 注意：记得去gayhub查看最新版本，最新版本最niubility
 
@@ -36,10 +38,10 @@ allprojects {
 2.直接在需要使用的模块的build.gradle中添加代码：
 
 ```java
-api 'com.github.AnJiaoDe:PermissionNiubility:V1.0.2'
+api 'com.github.AnJiaoDe:PermissionNiubility:V1.0.3'
 ```
 
-## 3.调用方式：
+## 3.调用方式( 必须在UI线程使用)：
 
 可以一个个请求：
 ```java
@@ -69,6 +71,63 @@ api 'com.github.AnJiaoDe:PermissionNiubility:V1.0.2'
                     public void onPermissionHave() {
                     }
                 });
+```
+
+## OnPermissionCallback 中可以override授权对框框和样式
+
+```java
+public abstract class OnPermissionCallback {
+    private Activity activity;
+
+    public OnPermissionCallback(Activity activity) {
+        this.activity = activity;
+    }
+
+
+    public abstract void onPermissionHave();
+
+    public void onPermissionRefuse() {
+    }
+
+    public void onPermissionRefuseNoAsk() {
+        authorize();
+    }
+
+    public String getAuthorizeDialogButtonPositive() {
+        return "去授权";
+    }
+
+    public String getAuthorizeDialogMessage() {
+        return "禁用这些权限，您可能无法使用某些功能";
+    }
+
+    public String getAuthorizeDialogButtonNegative() {
+        return "取消";
+    }
+
+    public void authorize() {
+        //解释原因，并且引导用户至设置页手动授权
+        new AlertDialog.Builder(activity)
+                .setMessage(getAuthorizeDialogMessage())
+                .setPositiveButton(getAuthorizeDialogButtonPositive(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //引导用户至设置页手动授权
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                        intent.setData(uri);
+                        activity.startActivity(intent);
+                    }
+                })
+                .setNegativeButton(getAuthorizeDialogButtonNegative(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //引导用户手动授权，权限请求失败
+                    }
+                }).show();
+    }
+}
+
 ```
 
 ## 注意：记得去gayhub查看最新版本，最新版本最niubility
@@ -107,21 +166,22 @@ PermissionUtils：
 
 ```java
 public class PermissionUtils {
-    public static void checkPermission(Activity activity,String[] permissions, OnPermissionCallback onPermissionCallback) {
-       for(String permission:permissions){
-           if(ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED){
-               PermissionManager.getInstance().setOnPermissionCallback(onPermissionCallback);
-               Intent intent=new Intent(activity,PermissionActivity.class);
-               Bundle bundle=new Bundle();
-               bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS,permissions);
-               intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS,bundle);
-               activity.startActivity(intent);
-               return;
-           }
-       }
-       onPermissionCallback.onPermissionHave();
+    public static void checkPermission(Activity activity, String[] permissions, OnPermissionCallback onPermissionCallback) {
+        for (String permission : permissions) {
+            if (ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+                PermissionManager.getInstance().getListCallback().add(onPermissionCallback);
+                Intent intent = new Intent(activity, PermissionActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS, permissions);
+                intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
+                activity.startActivity(intent);
+                return;
+            }
+        }
+        onPermissionCallback.onPermissionHave();
     }
 }
+
 ```
 
 PermissionActivity:
@@ -134,7 +194,7 @@ public class PermissionActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.TRANSPARENT);
         getWindow().setNavigationBarColor(Color.TRANSPARENT);
         Bundle bundle = getIntent().getBundleExtra(PermissionManager.INTENT_KEY_PERMISSIONS);
-        String[] permissions=null;
+        String[] permissions = null;
         if (bundle != null)
             permissions = bundle.getStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS);
         if (permissions != null && permissions.length > 0)
@@ -144,17 +204,20 @@ public class PermissionActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        OnPermissionCallback onPermissionCallback = PermissionManager.getInstance().getOnPermissionCallback();
+        OnPermissionCallback onPermissionCallback = null;
+        List<OnPermissionCallback> list = PermissionManager.getInstance().getListCallback();
+        if (!list.isEmpty()) onPermissionCallback = list.remove(list.size() - 1);
         for (int i = 0; i < permissions.length; i++) {
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) continue;
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                 //在用户已经拒绝授权的情况下，如果shouldShowRequestPermissionRationale返回false则
                 // 可以推断出用户选择了“不在提示”选项，在这种情况下需要引导用户至设置页手动授权
-                finish();
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
+                    finish();
                     if (onPermissionCallback != null)
                         onPermissionCallback.onPermissionRefuseNoAsk();
                 } else {
+                    finish();
                     //权限请求失败，但未选中“不再提示”选项
                     if (onPermissionCallback != null)
                         onPermissionCallback.onPermissionRefuse();
@@ -166,7 +229,9 @@ public class PermissionActivity extends AppCompatActivity {
         if (onPermissionCallback != null)
             onPermissionCallback.onPermissionHave();
     }
+
 }
+
 
 ```
 OnPermissionCallback：
@@ -179,6 +244,7 @@ public abstract class OnPermissionCallback {
         this.activity = activity;
     }
 
+
     public abstract void onPermissionHave();
 
     public void onPermissionRefuse() {
@@ -187,15 +253,19 @@ public abstract class OnPermissionCallback {
     public void onPermissionRefuseNoAsk() {
         authorize();
     }
-    public String getAuthorizeDialogButtonPositive(){
+
+    public String getAuthorizeDialogButtonPositive() {
         return "去授权";
     }
-    public String getAuthorizeDialogMessage(){
+
+    public String getAuthorizeDialogMessage() {
         return "禁用这些权限，您可能无法使用某些功能";
     }
-    public String getAuthorizeDialogButtonNegative(){
+
+    public String getAuthorizeDialogButtonNegative() {
         return "取消";
     }
+
     public void authorize() {
         //解释原因，并且引导用户至设置页手动授权
         new AlertDialog.Builder(activity)
@@ -205,7 +275,7 @@ public abstract class OnPermissionCallback {
                     public void onClick(DialogInterface dialog, int which) {
                         //引导用户至设置页手动授权
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package",activity.getPackageName(), null);
+                        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
                         intent.setData(uri);
                         activity.startActivity(intent);
                     }
@@ -219,6 +289,7 @@ public abstract class OnPermissionCallback {
     }
 }
 
+
 ```
 PermissionManager：
 
@@ -226,8 +297,9 @@ PermissionManager：
 class PermissionManager {
     public static final String INTENT_KEY_PERMISSIONS = "intent_key_permissions";
     public static final String BUNDLE_KEY_PERMISSIONS = "bundle_key_permissions";
-    private OnPermissionCallback onPermissionCallback;
+    private List<OnPermissionCallback> listCallback;
     private PermissionManager() {
+        listCallback=new ArrayList<>();
     }
 
     private static class PermissionManagerHolder {
@@ -238,14 +310,11 @@ class PermissionManager {
         return PermissionManagerHolder.instance;
     }
 
-    public OnPermissionCallback getOnPermissionCallback() {
-        return onPermissionCallback;
-    }
-
-    public void setOnPermissionCallback(OnPermissionCallback onPermissionCallback) {
-        this.onPermissionCallback = onPermissionCallback;
+    public List<OnPermissionCallback> getListCallback() {
+        return listCallback;
     }
 }
+
 
 ```
 ## 欢迎联系、指正、批评
