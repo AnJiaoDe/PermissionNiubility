@@ -4,6 +4,8 @@ GitHub:https://github.com/AnJiaoDe/PermissionNiubility
 
 使用方法
 
+注意：如果轮子死活下载不下来，说明maven地址有毛病，你需要找到jitpack的官网首页，查看最新的官网地址
+
 3.调用方式( 必须在UI线程使用)：
 
 OnPermissionCallback 中可以override授权对框框和样式
@@ -25,20 +27,22 @@ OnPermissionCallback 中可以override授权对框框和样式
 ## [GitHub:https://github.com/AnJiaoDe/PermissionNiubility](https://github.com/AnJiaoDe/PermissionNiubility)
 
 ## 使用方法
-1.工程目录下的build.gradle中添加代码：
+
+1.工程目录下的`build.gradle`中添加代码：
+
+## 注意：如果轮子死活下载不下来，说明maven地址有毛病，你需要找到jitpack的官网首页，查看最新的官网地址
 
 ```java
 allprojects {
 		repositories {
-			
-			maven { url 'https://jitpack.io' }
+			        maven { url 'https://www.jitpack.io' }
 		}
 	}
 ```
 2.直接在需要使用的模块的build.gradle中添加代码：
 
 ```java
-api 'com.github.AnJiaoDe:PermissionNiubility:V1.0.3'
+api 'com.github.AnJiaoDe:PermissionNiubility:V1.0.8'
 ```
 
 ## 3.调用方式( 必须在UI线程使用)：
