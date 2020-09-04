@@ -2,6 +2,7 @@ package com.cy.permissionniubility;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -22,10 +23,10 @@ import androidx.appcompat.app.AlertDialog;
  * @Version: 1.0
  */
 public abstract class OnPermissionCallback {
-    private Activity activity;
+    private Context context;
 
-    public OnPermissionCallback(Activity activity) {
-        this.activity = activity;
+    public OnPermissionCallback(Context context) {
+        this.context = context;
     }
 
 
@@ -52,16 +53,16 @@ public abstract class OnPermissionCallback {
 
     public void authorize() {
         //解释原因，并且引导用户至设置页手动授权
-        new AlertDialog.Builder(activity)
+        new AlertDialog.Builder(context)
                 .setMessage(getAuthorizeDialogMessage())
                 .setPositiveButton(getAuthorizeDialogButtonPositive(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //引导用户至设置页手动授权
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
                         intent.setData(uri);
-                        activity.startActivity(intent);
+                        context.startActivity(intent);
                     }
                 })
                 .setNegativeButton(getAuthorizeDialogButtonNegative(), new DialogInterface.OnClickListener() {
