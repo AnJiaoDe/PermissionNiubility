@@ -26,6 +26,7 @@ public class PermissionUtils {
                 Bundle bundle = new Bundle();
                 bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS, permissions);
                 intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 return;
             }

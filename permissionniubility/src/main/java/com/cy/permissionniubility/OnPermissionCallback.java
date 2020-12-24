@@ -62,6 +62,7 @@ public abstract class OnPermissionCallback {
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         Uri uri = Uri.fromParts("package", context.getPackageName(), null);
                         intent.setData(uri);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
                     }
                 })
