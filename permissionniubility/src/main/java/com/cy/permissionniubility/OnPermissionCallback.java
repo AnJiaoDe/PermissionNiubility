@@ -40,15 +40,15 @@ public abstract class OnPermissionCallback {
     }
 
     public String getAuthorizeDialogButtonPositive() {
-        return "去授权";
+        return context.getResources().getString(R.string.to_authorize);
     }
 
     public String getAuthorizeDialogMessage() {
-        return "禁用这些权限，您可能无法使用某些功能";
+        return context.getResources().getString(R.string.forbid_ask);
     }
 
     public String getAuthorizeDialogButtonNegative() {
-        return "取消";
+        return context.getResources().getString(R.string.cancel);
     }
 
     public void authorize() {
@@ -70,6 +70,7 @@ public abstract class OnPermissionCallback {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //引导用户手动授权，权限请求失败
+                        dialog.dismiss();
                     }
                 }).show();
     }

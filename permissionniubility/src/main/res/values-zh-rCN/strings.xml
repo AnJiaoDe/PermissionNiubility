@@ -1,0 +1,5 @@
+<resources>
+    <string name="to_authorize">去授权</string>
+    <string name="forbid_ask">禁用这些权限，您可能无法使用某些功能</string>
+    <string name="cancel">取消</string>
+</resources>

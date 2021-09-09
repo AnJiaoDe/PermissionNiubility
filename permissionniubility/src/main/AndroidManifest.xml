@@ -8,6 +8,7 @@
         <activity
             android:name="com.cy.permissionniubility.PermissionActivity"
             android:theme="@style/PermissionNiubility_TranslucentTheme"
+            android:screenOrientation="portrait"
             android:launchMode="singleTop" />
     </application>
 
