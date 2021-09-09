@@ -42,18 +42,15 @@ public class PermissionActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        OnPermissionCallback onPermissionCallback = null;
-        List<OnPermissionCallback> list = PermissionManager.getInstance().getListCallback();
-        if (!list.isEmpty()) onPermissionCallback = list.remove(list.size() - 1);
+        OnPermissionCallback onPermissionCallback  = PermissionManager.getInstance().getOnPermissionCallback();
+        PermissionManager.getInstance().setOnPermissionCallback(null);
         for (int i = 0; i < permissions.length; i++) {
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) continue;
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                 //在用户已经拒绝授权的情况下，如果shouldShowRequestPermissionRationale返回false则
                 // 可以推断出用户选择了“不在提示”选项，在这种情况下需要引导用户至设置页手动授权
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
-                    finish();
-                    if (onPermissionCallback != null)
-                        onPermissionCallback.onPermissionRefuseNoAsk();
+                    authorize();
                 } else {
                     finish();
                     //权限请求失败，但未选中“不再提示”选项
@@ -66,6 +63,48 @@ public class PermissionActivity extends AppCompatActivity {
         finish();
         if (onPermissionCallback != null)
             onPermissionCallback.onPermissionHave();
+    }
+
+    private String getAuthorizeDialogButtonPositive() {
+        return getResources().getString(R.string.to_authorize);
+    }
+
+    private String getAuthorizeDialogMessage() {
+        return getResources().getString(R.string.forbid_ask);
+    }
+
+    private String getAuthorizeDialogButtonNegative() {
+        return getResources().getString(R.string.cancel);
+    }
+
+    private void authorize() {
+        //解释原因，并且引导用户至设置页手动授权
+        new AlertDialog.Builder(this)
+                .setMessage(getAuthorizeDialogMessage())
+                .setPositiveButton(getAuthorizeDialogButtonPositive(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //引导用户至设置页手动授权
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                })
+                .setNegativeButton(getAuthorizeDialogButtonNegative(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //引导用户手动授权，权限请求失败
+                        dialog.dismiss();
+                    }
+                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                finish();
+            }
+        }).show();
     }
 
 }

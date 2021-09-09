@@ -17,9 +17,8 @@ import java.util.List;
  class PermissionManager {
     public static final String INTENT_KEY_PERMISSIONS = "intent_key_permissions";
     public static final String BUNDLE_KEY_PERMISSIONS = "bundle_key_permissions";
-    private List<OnPermissionCallback> listCallback;
+    private OnPermissionCallback onPermissionCallback;
     private PermissionManager() {
-        listCallback=new ArrayList<>();
     }
 
     private static class PermissionManagerHolder {
@@ -30,7 +29,11 @@ import java.util.List;
         return PermissionManagerHolder.instance;
     }
 
-    public List<OnPermissionCallback> getListCallback() {
-        return listCallback;
+    public OnPermissionCallback getOnPermissionCallback() {
+        return onPermissionCallback;
+    }
+
+    public void setOnPermissionCallback(OnPermissionCallback onPermissionCallback) {
+        this.onPermissionCallback = onPermissionCallback;
     }
 }

@@ -21,7 +21,7 @@ public class PermissionUtils {
     public static void checkPermission(Context context, String[] permissions, OnPermissionCallback onPermissionCallback) {
         for (String permission : permissions) {
             if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                PermissionManager.getInstance().getListCallback().add(onPermissionCallback);
+                PermissionManager.getInstance().setOnPermissionCallback(onPermissionCallback);
                 Intent intent = new Intent(context, PermissionActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS, permissions);
