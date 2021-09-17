@@ -30,12 +30,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 PermissionUtils.checkPermission(MainActivity.this,
                         new String[]{Manifest.permission.CAMERA},
-                        new OnPermissionCallback() {
+                        new OnPermissionCallback(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
                         PermissionUtils.checkPermission(MainActivity.this,
                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                new OnPermissionCallback() {
+                                new OnPermissionCallback(MainActivity.this) {
                             @Override
                             public void onPermissionHave() {
                             }

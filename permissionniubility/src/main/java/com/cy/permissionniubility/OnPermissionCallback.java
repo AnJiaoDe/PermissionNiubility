@@ -23,7 +23,53 @@ import androidx.appcompat.app.AlertDialog;
  * @Version: 1.0
  */
 public abstract class OnPermissionCallback {
+    private Context context;
+
+    public OnPermissionCallback(Context context) {
+        this.context = context;
+    }
+
     public abstract void onPermissionHave();
     public void onPermissionRefuse() {
     }
+    public void onPermissionNoAsk() {
+            //解释原因，并且引导用户至设置页手动授权
+            new AlertDialog.Builder(context)
+                    .setMessage(getAuthorizeDialogMessage())
+                    .setPositiveButton(getAuthorizeDialogButtonPositive(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //引导用户至设置页手动授权
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+                            intent.setData(uri);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton(getAuthorizeDialogButtonNegative(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //引导用户手动授权，权限请求失败
+                            dialog.dismiss();
+                        }
+                    }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                }
+            }).show();
+        }
+
+    public String getAuthorizeDialogButtonPositive() {
+        return context.getResources().getString(R.string.to_authorize);
+    }
+
+    public String getAuthorizeDialogMessage() {
+        return context.getResources().getString(R.string.forbid_ask);
+    }
+
+    public String getAuthorizeDialogButtonNegative() {
+        return context.getResources().getString(R.string.cancel);
+    }
+
 }
