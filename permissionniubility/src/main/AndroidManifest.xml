@@ -5,10 +5,17 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true">
+<!--        java.lang.IllegalStateException: Only fullscreen opaque activities can request orientation-->
+
+<!--        背景-->
+<!--        手机升级系统后，到了Android8.0，打开原来自己开发的一个app后，发现直接打不开，即闪退了。-->
+
+<!--        只有全屏不透明的activity才可以设置横竖屏方向，半透明/对话框等不可设置横竖屏。-->
+
+<!--        这个是SDK8.0的系统Bug，之后的版本已修复。-->
         <activity
             android:name="com.cy.permissionniubility.PermissionActivity"
             android:theme="@style/PermissionNiubility_TranslucentTheme"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop" />
     </application>
 
