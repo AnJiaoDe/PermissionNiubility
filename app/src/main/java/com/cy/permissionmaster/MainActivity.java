@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
                         new OnPermissionCallback(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
+                        Log.e("checkPermission","checkPermission");
                         PermissionUtils.checkPermission(MainActivity.this,
                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 new OnPermissionCallback(MainActivity.this) {
