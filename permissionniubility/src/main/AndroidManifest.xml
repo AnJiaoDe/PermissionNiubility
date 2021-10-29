@@ -1,22 +1,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cy.permissionniubility">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true">
-<!--        java.lang.IllegalStateException: Only fullscreen opaque activities can request orientation-->
+        <!--        java.lang.IllegalStateException: Only fullscreen opaque activities can request orientation-->
 
-<!--        背景-->
-<!--        手机升级系统后，到了Android8.0，打开原来自己开发的一个app后，发现直接打不开，即闪退了。-->
+        <!--        背景-->
+        <!--        手机升级系统后，到了Android8.0，打开原来自己开发的一个app后，发现直接打不开，即闪退了。-->
 
-<!--        只有全屏不透明的activity才可以设置横竖屏方向，半透明/对话框等不可设置横竖屏。-->
+        <!--        只有全屏不透明的activity才可以设置横竖屏方向，半透明/对话框等不可设置横竖屏。-->
 
-<!--        这个是SDK8.0的系统Bug，之后的版本已修复。-->
+        <!--        这个是SDK8.0的系统Bug，之后的版本已修复。-->
         <activity
             android:name="com.cy.permissionniubility.PermissionActivity"
-            android:theme="@style/PermissionNiubility_TranslucentTheme"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/PermissionNiubility_TranslucentTheme" />
     </application>
 
 </manifest>

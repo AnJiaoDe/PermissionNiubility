@@ -7,6 +7,7 @@ import android.content.pm.PermissionInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
                                 new OnPermissionCallback(MainActivity.this) {
                             @Override
                             public void onPermissionHave() {
+                                Toast.makeText(MainActivity.this, "可以拍照了", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -49,6 +51,23 @@ public class MainActivity extends AppCompatActivity {
 //                    public void onPermissionHave() {
 //                    }
 //                });
+            }
+        });
+        findViewById(R.id.btn_11).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PermissionUtils.checkPermissionExternalStorage(MainActivity.this, new OnPermissionCallback(MainActivity.this) {
+                    @Override
+                    public void onPermissionHave() {
+                        Toast.makeText(MainActivity.this, "拥有存储权限了", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onPermissionRefuse() {
+                        super.onPermissionRefuse();
+                        Toast.makeText(MainActivity.this, "尚未同意存储权限", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 

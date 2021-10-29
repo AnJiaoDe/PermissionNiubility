@@ -17,6 +17,7 @@ import java.util.List;
  class PermissionManager {
     public static final String INTENT_KEY_PERMISSIONS = "intent_key_permissions";
     public static final String BUNDLE_KEY_PERMISSIONS = "bundle_key_permissions";
+    public static final String STORAGE_11 = "STORAGE_11";
     private OnPermissionCallback onPermissionCallback;
     private PermissionManager() {
     }
