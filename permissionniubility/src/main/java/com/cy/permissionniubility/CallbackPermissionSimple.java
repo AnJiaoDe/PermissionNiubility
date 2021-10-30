@@ -23,9 +23,10 @@ public abstract class CallbackPermissionSimple extends CallbackPermission {
     public CallbackPermissionSimple(Context context) {
         super(context);
     }
-
+    @Override
     public abstract void onPermissionHave();
 
+    @Override
     public void onPermissionRefuse() {
         Toast.makeText(context, getAuthorizeDialogMessage(), Toast.LENGTH_SHORT).show();
     }
