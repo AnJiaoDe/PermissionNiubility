@@ -1,7 +1,5 @@
 package com.cy.permissionniubility;
 
-import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -9,20 +7,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.PersistableBundle;
 import android.provider.Settings;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
-import java.util.List;
 
 
 /**
@@ -43,11 +33,11 @@ public class PermissionActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 // 先判断有没有权限
                 if (Environment.isExternalStorageManager()) {
-                    OnPermissionCallback onPermissionCallback = PermissionManager.getInstance().getOnPermissionCallback();
+                    CallbackPermission callbackPermission = PermissionManager.getInstance().getOnPermissionCallback();
                     PermissionManager.getInstance().setOnPermissionCallback(null);
                     finish();
-                    if (onPermissionCallback != null)
-                        onPermissionCallback.onPermissionHave();
+                    if (callbackPermission != null)
+                        callbackPermission.onPermissionHave();
                 } else {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                     intent.setData(Uri.parse("package:" + getPackageName()));
@@ -65,7 +55,7 @@ public class PermissionActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        OnPermissionCallback onPermissionCallback = PermissionManager.getInstance().getOnPermissionCallback();
+        CallbackPermission callbackPermission = PermissionManager.getInstance().getOnPermissionCallback();
         PermissionManager.getInstance().setOnPermissionCallback(null);
         for (int i = 0; i < permissions.length; i++) {
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) continue;
@@ -75,20 +65,20 @@ public class PermissionActivity extends AppCompatActivity {
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
                     finish();
                     //权限请求失败，但未选中“不再提示”选项
-                    if (onPermissionCallback != null)
-                        onPermissionCallback.onPermissionNoAsk();
+                    if (callbackPermission != null)
+                        callbackPermission.onPermissionNoAsk();
                 } else {
                     finish();
                     //权限请求失败，但未选中“不再提示”选项
-                    if (onPermissionCallback != null)
-                        onPermissionCallback.onPermissionRefuse();
+                    if (callbackPermission != null)
+                        callbackPermission.onPermissionRefuse();
                 }
                 return;
             }
         }
         finish();
-        if (onPermissionCallback != null)
-            onPermissionCallback.onPermissionHave();
+        if (callbackPermission != null)
+            callbackPermission.onPermissionHave();
     }
 
     /**
@@ -112,14 +102,14 @@ public class PermissionActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CTORAGE_11 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            OnPermissionCallback onPermissionCallback = PermissionManager.getInstance().getOnPermissionCallback();
+            CallbackPermission callbackPermission = PermissionManager.getInstance().getOnPermissionCallback();
             PermissionManager.getInstance().setOnPermissionCallback(null);
             finish();
-            if (onPermissionCallback == null) return;
+            if (callbackPermission == null) return;
             if (Environment.isExternalStorageManager()) {
-                onPermissionCallback.onPermissionHave();
+                callbackPermission.onPermissionHave();
             } else {
-                onPermissionCallback.onPermissionRefuse();
+                callbackPermission.onPermissionRefuse();
             }
         }
     }

@@ -170,10 +170,10 @@ PermissionUtils：
 
 ```java
 public class PermissionUtils {
-    public static void checkPermission(Activity activity, String[] permissions, OnPermissionCallback onPermissionCallback) {
+    public static void checkPermission(Activity activity, String[] permissions, OnPermissionCallback callbackPermission) {
         for (String permission : permissions) {
             if (ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
-                PermissionManager.getInstance().getListCallback().add(onPermissionCallback);
+                PermissionManager.getInstance().getListCallback().add(callbackPermission);
                 Intent intent = new Intent(activity, PermissionActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS, permissions);
@@ -182,7 +182,7 @@ public class PermissionUtils {
                 return;
             }
         }
-        onPermissionCallback.onPermissionHave();
+        callbackPermission.onPermissionHave();
     }
 }
 
@@ -208,9 +208,9 @@ public class PermissionActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        OnPermissionCallback onPermissionCallback = null;
+        OnPermissionCallback callbackPermission = null;
         List<OnPermissionCallback> list = PermissionManager.getInstance().getListCallback();
-        if (!list.isEmpty()) onPermissionCallback = list.remove(list.size() - 1);
+        if (!list.isEmpty()) callbackPermission = list.remove(list.size() - 1);
         for (int i = 0; i < permissions.length; i++) {
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) continue;
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
@@ -218,20 +218,20 @@ public class PermissionActivity extends AppCompatActivity {
                 // 可以推断出用户选择了“不在提示”选项，在这种情况下需要引导用户至设置页手动授权
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
                     finish();
-                    if (onPermissionCallback != null)
-                        onPermissionCallback.onPermissionRefuseNoAsk();
+                    if (callbackPermission != null)
+                        callbackPermission.onPermissionRefuseNoAsk();
                 } else {
                     finish();
                     //权限请求失败，但未选中“不再提示”选项
-                    if (onPermissionCallback != null)
-                        onPermissionCallback.onPermissionRefuse();
+                    if (callbackPermission != null)
+                        callbackPermission.onPermissionRefuse();
                 }
                 return;
             }
         }
         finish();
-        if (onPermissionCallback != null)
-            onPermissionCallback.onPermissionHave();
+        if (callbackPermission != null)
+            callbackPermission.onPermissionHave();
     }
 
 }

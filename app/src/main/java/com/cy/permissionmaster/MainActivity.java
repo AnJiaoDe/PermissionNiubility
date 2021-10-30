@@ -1,22 +1,14 @@
 package com.cy.permissionmaster;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.Application;
-import android.content.pm.PermissionInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
 
-import com.cy.permissionniubility.OnPermissionCallback;
+import com.cy.permissionniubility.CallbackPermission;
 import com.cy.permissionniubility.PermissionUtils;
 
 
@@ -31,13 +23,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 PermissionUtils.checkPermission(MainActivity.this,
                         new String[]{Manifest.permission.CAMERA},
-                        new OnPermissionCallback(MainActivity.this) {
+                        new CallbackPermission(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
                         Log.e("checkPermission","checkPermission");
                         PermissionUtils.checkPermission(MainActivity.this,
                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                new OnPermissionCallback(MainActivity.this) {
+                                new CallbackPermission(MainActivity.this) {
                             @Override
                             public void onPermissionHave() {
                                 Toast.makeText(MainActivity.this, "可以拍照了", Toast.LENGTH_SHORT).show();
@@ -57,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_11).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PermissionUtils.checkPermissionExternalStorage(MainActivity.this, new OnPermissionCallback(MainActivity.this) {
+                PermissionUtils.checkPermissionExternalStorage(MainActivity.this, new CallbackPermission(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
                         Toast.makeText(MainActivity.this, "拥有存储权限了", Toast.LENGTH_SHORT).show();

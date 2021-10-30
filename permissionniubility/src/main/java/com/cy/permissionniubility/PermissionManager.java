@@ -1,10 +1,5 @@
 package com.cy.permissionniubility;
 
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @Description:
  * @Author: cy
@@ -18,7 +13,7 @@ import java.util.List;
     public static final String INTENT_KEY_PERMISSIONS = "intent_key_permissions";
     public static final String BUNDLE_KEY_PERMISSIONS = "bundle_key_permissions";
     public static final String STORAGE_11 = "STORAGE_11";
-    private OnPermissionCallback onPermissionCallback;
+    private CallbackPermission callbackPermission;
     private PermissionManager() {
     }
 
@@ -30,11 +25,11 @@ import java.util.List;
         return PermissionManagerHolder.instance;
     }
 
-    public OnPermissionCallback getOnPermissionCallback() {
-        return onPermissionCallback;
+    public CallbackPermission getOnPermissionCallback() {
+        return callbackPermission;
     }
 
-    public void setOnPermissionCallback(OnPermissionCallback onPermissionCallback) {
-        this.onPermissionCallback = onPermissionCallback;
+    public void setOnPermissionCallback(CallbackPermission callbackPermission) {
+        this.callbackPermission = callbackPermission;
     }
 }

@@ -22,10 +22,10 @@ import androidx.appcompat.app.AlertDialog;
  * @UpdateRemark:
  * @Version: 1.0
  */
-public abstract class OnPermissionCallback {
-    private Context context;
+public abstract class CallbackPermission {
+    protected Context context;
 
-    public OnPermissionCallback(Context context) {
+    public CallbackPermission(Context context) {
         this.context = context;
     }
 
