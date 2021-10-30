@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 });
+                //LOG会先打印,回调是后面执行
+                Log.e("checkPermission","checkPermission");
+
 //                PermissionUtils.checkPermission(MainActivity.this,
 //                        new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE},
 //                        new OnPermissionCallback(MainActivity.this) {
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_11).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 PermissionUtils.checkPermissionExternalStorage(MainActivity.this, new CallbackPermission(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
@@ -61,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "尚未同意存储权限", Toast.LENGTH_SHORT).show();
                     }
                 });
+                Log.e("checkPermissionExt","checkPermissionExternalStorage");
             }
         });
 
