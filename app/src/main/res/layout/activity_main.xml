@@ -17,4 +17,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="存储权限适配Android 11" />
+    <Button
+        android:id="@+id/btn_write_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="write_setting" />
 </LinearLayout>

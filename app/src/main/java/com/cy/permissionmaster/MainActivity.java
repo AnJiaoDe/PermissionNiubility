@@ -68,6 +68,23 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("checkPermissionExt","checkPermissionExternalStorage");
             }
         });
+        findViewById(R.id.btn_write_setting).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PermissionUtils.checkWRITE_SETTINGS(MainActivity.this, new CallbackPermission(MainActivity.this) {
+                    @Override
+                    public void onPermissionHave() {
+                        Toast.makeText(MainActivity.this, "WRITE_SETTINGS已获取", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onPermissionRefuse() {
+                        super.onPermissionRefuse();
+                        Toast.makeText(MainActivity.this, "尚未同意存储WRITE_SETTINGS", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
 
     }
 }

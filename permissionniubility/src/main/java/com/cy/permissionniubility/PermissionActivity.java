@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 
 public class PermissionActivity extends AppCompatActivity {
     private final int REQUEST_CODE_CTORAGE_11 = 100;
+    private final int REQUEST_CODE_WRITE_SETTINGS = 101;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +46,12 @@ public class PermissionActivity extends AppCompatActivity {
 
                 }
             }
+            return;
+        } else if (bundle.getString(PermissionManager.BUNDLE_KEY_PERMISSIONS, "").equals(PermissionManager.ACTION_MANAGE_WRITE_SETTINGS)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
+            //这行不能加，否则GG
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS);
             return;
         }
         String[] permissions = bundle.getStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS);
@@ -94,6 +101,7 @@ public class PermissionActivity extends AppCompatActivity {
      * 2021-10-29 20:09:29.993 18060-18060/com.cy.permissionmaster E/onActivityResult: onPause
      * 2021-10-29 20:09:30.177 18060-18060/com.cy.permissionmaster E/onActivityResult: onStop
      * 2021-10-29 20:09:30.179 18060-18060/com.cy.permissionmaster E/onActivityResult: onDestroy
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -101,12 +109,21 @@ public class PermissionActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        CallbackPermission callbackPermission = PermissionManager.getInstance().getOnPermissionCallback();
+        PermissionManager.getInstance().setOnPermissionCallback(null);
+        finish();
+        if (callbackPermission == null) return;
+
         if (requestCode == REQUEST_CODE_CTORAGE_11 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            CallbackPermission callbackPermission = PermissionManager.getInstance().getOnPermissionCallback();
-            PermissionManager.getInstance().setOnPermissionCallback(null);
-            finish();
-            if (callbackPermission == null) return;
             if (Environment.isExternalStorageManager()) {
+                callbackPermission.onPermissionHave();
+            } else {
+                callbackPermission.onPermissionRefuse();
+            }
+            return;
+        }
+        if(requestCode==REQUEST_CODE_WRITE_SETTINGS&&Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(Settings.System.canWrite(this) ){
                 callbackPermission.onPermissionHave();
             } else {
                 callbackPermission.onPermissionRefuse();

@@ -4,9 +4,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 
 import androidx.core.app.ActivityCompat;
 
@@ -86,4 +88,20 @@ public class PermissionUtils {
             checkPermission(context, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, callbackPermission);
         }
     }
+
+    public static void checkWRITE_SETTINGS(Context context, CallbackPermission callbackPermission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(context)) {
+            PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
+            Intent intent = new Intent(context, PermissionActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.ACTION_MANAGE_WRITE_SETTINGS);
+            intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            return;
+        }
+        callbackPermission.onPermissionHave();
+    }
+
+
 }

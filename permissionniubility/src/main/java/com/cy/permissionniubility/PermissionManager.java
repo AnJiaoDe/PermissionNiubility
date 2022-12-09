@@ -11,6 +11,7 @@ package com.cy.permissionniubility;
  */
  class PermissionManager {
     public static final String INTENT_KEY_PERMISSIONS = "intent_key_permissions";
+    public static final String ACTION_MANAGE_WRITE_SETTINGS = "ACTION_MANAGE_WRITE_SETTINGS";
     public static final String BUNDLE_KEY_PERMISSIONS = "bundle_key_permissions";
     public static final String STORAGE_11 = "STORAGE_11";
     private CallbackPermission callbackPermission;
