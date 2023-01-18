@@ -89,6 +89,13 @@ public class PermissionUtils {
         }
     }
 
+    public static boolean havePermissionExternalStorage(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager())
+            return true;
+        return ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
     public static void checkWRITE_SETTINGS(Context context, CallbackPermission callbackPermission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(context)) {
             PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
