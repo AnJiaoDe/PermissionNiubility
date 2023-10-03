@@ -30,35 +30,40 @@ public abstract class CallbackPermission {
     }
 
     public abstract void onPermissionHave();
+
     public void onPermissionRefuse() {
     }
+
     public void onPermissionNoAsk() {
-            //解释原因，并且引导用户至设置页手动授权
-            new AlertDialog.Builder(context)
-                    .setMessage(getAuthorizeDialogMessage())
-                    .setPositiveButton(getAuthorizeDialogButtonPositive(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //引导用户至设置页手动授权
-                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-                            intent.setData(uri);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton(getAuthorizeDialogButtonNegative(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //引导用户手动授权，权限请求失败
-                            dialog.dismiss();
-                        }
-                    }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                }
-            }).show();
-        }
+        //解释原因，并且引导用户至设置页手动授权
+        new AlertDialog.Builder(context)
+                .setMessage(getAuthorizeDialogMessage())
+                .setPositiveButton(getAuthorizeDialogButtonPositive(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //引导用户至设置页手动授权
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+                        intent.setData(uri);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                        onAuthorizeDialogGoTo();
+                    }
+                })
+                .setNegativeButton(getAuthorizeDialogButtonNegative(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //引导用户手动授权，权限请求失败
+                        dialog.dismiss();
+                        onAuthorizeDialogCanceled();
+                    }
+                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        onAuthorizeDialogDismissed();
+                    }
+                }).show();
+    }
 
     public String getAuthorizeDialogButtonPositive() {
         return context.getResources().getString(R.string.to_authorize);
@@ -70,6 +75,18 @@ public abstract class CallbackPermission {
 
     public String getAuthorizeDialogButtonNegative() {
         return context.getResources().getString(R.string.cancel);
+    }
+
+    public void onAuthorizeDialogGoTo() {
+
+    }
+
+    public void onAuthorizeDialogCanceled() {
+
+    }
+
+    public void onAuthorizeDialogDismissed() {
+
     }
 
 }
