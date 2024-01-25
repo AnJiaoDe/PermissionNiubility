@@ -89,7 +89,9 @@ public class PermissionUtils {
         }
         callbackPermission.onPermissionHave();
     }
-
+    public static void checknStorageAsk(final Context context, final CallbackPermission callbackPermission) {
+        checkPermissionExternalStorage(context,context.getString(R.string.storage_permission_ask),callbackPermission);
+    }
     /**
      * 特殊权限
      * return Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) ||

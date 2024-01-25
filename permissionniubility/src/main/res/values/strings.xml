@@ -3,4 +3,5 @@
     <string name="to_authorize">To authorize</string>
     <string name="forbid_ask">Disable these permissions, you may not be able to use some features</string>
     <string name="cancel">Cancel</string>
+    <string name="storage_permission_ask">如果您需要访问相册、存储图片、视频等，您需要授予存储权限</string>
 </resources>

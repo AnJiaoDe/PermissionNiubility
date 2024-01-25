@@ -2,4 +2,5 @@
     <string name="to_authorize">去授权</string>
     <string name="forbid_ask">禁用这些权限，您可能无法使用某些功能</string>
     <string name="cancel">取消</string>
+    <string name="storage_permission_ask">如果您需要访问相册、存储图片、视频等，您需要授予存储权限</string>
 </resources>
