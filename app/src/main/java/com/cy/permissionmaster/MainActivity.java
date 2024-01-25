@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PermissionUtils.checkPermission(MainActivity.this,
+                PermissionUtils.checkPermission(MainActivity.this,"相机权限：如果您需要录像，xxxxx",
                         new String[]{Manifest.permission.CAMERA},
                         new CallbackPermission(MainActivity.this) {
                     @Override
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                PermissionUtils.checkPermissionExternalStorage(MainActivity.this, new CallbackPermission(MainActivity.this) {
+                PermissionUtils.checkPermissionExternalStorage(MainActivity.this,"存储权限：如果您需要，xxxxx", new CallbackPermission(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
                         Toast.makeText(MainActivity.this, "拥有存储权限了", Toast.LENGTH_SHORT).show();

@@ -2,6 +2,7 @@ package com.cy.permissionniubility;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
 /**
@@ -22,6 +24,33 @@ import androidx.core.app.ActivityCompat;
  * @Version: 1.0
  */
 public class PermissionUtils {
+
+    private static void showDialogAsk(Context context, String text_ask, final CallbackAsk callbackAsk) {
+        new AlertDialog.Builder(context)
+                .setMessage(text_ask)
+                .setPositiveButton(context.getResources().getString(R.string.to_authorize), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbackAsk.onToAuthorizeClicked();
+                    }
+                })
+                .setNegativeButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
+    }
+
+    public static void checkPermission(final Context context, String text_ask, final String[] permissions, final CallbackPermission callbackPermission) {
+        showDialogAsk(context, text_ask, new CallbackAsk() {
+            @Override
+            public void onToAuthorizeClicked() {
+                checkPermission(context, permissions, callbackPermission);
+            }
+        });
+    }
 
     public static void checkPermission(Context context, String[] permissions, final CallbackPermission callbackPermission) {
         for (String permission : permissions) {
@@ -56,6 +85,15 @@ public class PermissionUtils {
 
         }
         callbackPermission.onPermissionHave();
+    }
+
+    public static void checkPermissionExternalStorage(final Context context, String text_ask, final CallbackPermission callbackPermission) {
+        showDialogAsk(context, text_ask, new CallbackAsk() {
+            @Override
+            public void onToAuthorizeClicked() {
+                checkPermissionExternalStorage(context, callbackPermission);
+            }
+        });
     }
 
     /**
@@ -96,6 +134,15 @@ public class PermissionUtils {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
+    public static void checkWRITE_SETTINGS(final Context context, String text_ask, final CallbackPermission callbackPermission) {
+        showDialogAsk(context, text_ask, new CallbackAsk() {
+            @Override
+            public void onToAuthorizeClicked() {
+                checkWRITE_SETTINGS(context, callbackPermission);
+            }
+        });
+    }
+
     public static void checkWRITE_SETTINGS(Context context, CallbackPermission callbackPermission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(context)) {
             PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
@@ -110,5 +157,7 @@ public class PermissionUtils {
         callbackPermission.onPermissionHave();
     }
 
-
+    private static interface CallbackAsk {
+        void onToAuthorizeClicked();
+    }
 }
