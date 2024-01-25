@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onPermissionHave() {
                         Log.e("checkPermission","checkPermission");
-                        PermissionUtils.checkPermission(MainActivity.this,
+                        PermissionUtils.checkPermission(MainActivity.this,null,
                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 new CallbackPermission(MainActivity.this) {
                             @Override
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_write_setting).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PermissionUtils.checkWRITE_SETTINGS(MainActivity.this, new CallbackPermission(MainActivity.this) {
+                PermissionUtils.checkWRITE_SETTINGS(MainActivity.this,null, new CallbackPermission(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
                         Toast.makeText(MainActivity.this, "WRITE_SETTINGS已获取", Toast.LENGTH_SHORT).show();
