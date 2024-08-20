@@ -26,29 +26,7 @@ import androidx.core.app.ActivityCompat;
  */
 public class PermissionUtils {
 
-    private static void showDialogAsk(Context context, String text_ask, final CallbackAsk callbackAsk) {
-        if (TextUtils.isEmpty(text_ask)) {
-            callbackAsk.onToAuthorizeClicked();
-            return;
-        }
-        new AlertDialog.Builder(context)
-                .setMessage(text_ask)
-                .setPositiveButton(context.getResources().getString(R.string.to_authorize), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        callbackAsk.onToAuthorizeClicked();
-                    }
-                })
-                .setNegativeButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
-    }
-
-    public static void checkPermission(final Context context, String text_ask, final String[] permissions, final CallbackPermission callbackPermission) {
+    public static void checkPermission(final Context context, final String text_ask, final String[] permissions, final CallbackPermission callbackPermission) {
         for (String permission : permissions) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
                     (permission.equals(Manifest.permission_group.STORAGE)
@@ -57,41 +35,35 @@ public class PermissionUtils {
                             || permission.equals(Manifest.permission.MANAGE_EXTERNAL_STORAGE))) {
                 // 先判断有没有权限
                 if (!Environment.isExternalStorageManager()) {
-                    showDialogAsk(context, text_ask, new CallbackAsk() {
-                        @Override
-                        public void onToAuthorizeClicked() {
-                            PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
-                            Intent intent = new Intent(context, PermissionActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.STORAGE_11);
-                            intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent);
-                        }
-                    });
+                    PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
+                    Intent intent = new Intent(context, PermissionActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.STORAGE_11);
+                    bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+                    intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                     return;
                 }
             } else if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                showDialogAsk(context, text_ask, new CallbackAsk() {
-                    @Override
-                    public void onToAuthorizeClicked() {
-                        PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
-                        Intent intent = new Intent(context, PermissionActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS, permissions);
-                        intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
-                });
+                PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
+                Intent intent = new Intent(context, PermissionActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS, permissions);
+                bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+                intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
                 return;
             }
         }
         callbackPermission.onPermissionHave();
     }
+
     public static void checknStorageAsk(final Context context, final CallbackPermission callbackPermission) {
-        checkPermissionExternalStorage(context,context.getString(R.string.storage_permission_ask),callbackPermission);
+        checkPermissionExternalStorage(context, context.getString(R.string.storage_permission_ask), callbackPermission);
     }
+
     /**
      * 特殊权限
      * return Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) ||
@@ -110,18 +82,14 @@ public class PermissionUtils {
             if (Environment.isExternalStorageManager()) {
                 callbackPermission.onPermissionHave();
             } else {
-                showDialogAsk(context, text_ask, new CallbackAsk() {
-                    @Override
-                    public void onToAuthorizeClicked() {
-                        PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
-                        Intent intent = new Intent(context, PermissionActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.STORAGE_11);
-                        intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
-                });
+                PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
+                Intent intent = new Intent(context, PermissionActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+                bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.STORAGE_11);
+                intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
             }
         } else {
             checkPermission(context, text_ask, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, callbackPermission);
@@ -138,24 +106,16 @@ public class PermissionUtils {
 
     public static void checkWRITE_SETTINGS(final Context context, String text_ask, final CallbackPermission callbackPermission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(context)) {
-            showDialogAsk(context, text_ask, new CallbackAsk() {
-                @Override
-                public void onToAuthorizeClicked() {
-                    PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
-                    Intent intent = new Intent(context, PermissionActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.ACTION_MANAGE_WRITE_SETTINGS);
-                    intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                }
-            });
+            PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
+            Intent intent = new Intent(context, PermissionActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+            bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.ACTION_MANAGE_WRITE_SETTINGS);
+            intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
             return;
         }
         callbackPermission.onPermissionHave();
-    }
-
-    private static interface CallbackAsk {
-        void onToAuthorizeClicked();
     }
 }

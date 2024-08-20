@@ -10,6 +10,7 @@ package com.cy.permissionniubility;
  * @Version: 1.0
  */
  class PermissionManager {
+    public static final String INTENT_KEY_ASK = "intent_key_ask";
     public static final String INTENT_KEY_PERMISSIONS = "intent_key_permissions";
     public static final String ACTION_MANAGE_WRITE_SETTINGS = "ACTION_MANAGE_WRITE_SETTINGS";
     public static final String BUNDLE_KEY_PERMISSIONS = "bundle_key_permissions";

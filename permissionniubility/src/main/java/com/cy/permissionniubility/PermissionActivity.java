@@ -1,16 +1,24 @@
 package com.cy.permissionniubility;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -22,6 +30,7 @@ import androidx.core.app.ActivityCompat;
 public class PermissionActivity extends AppCompatActivity {
     private final int REQUEST_CODE_CTORAGE_11 = 100;
     private final int REQUEST_CODE_WRITE_SETTINGS = 101;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,14 +49,15 @@ public class PermissionActivity extends AppCompatActivity {
                     if (callbackPermission != null)
                         callbackPermission.onPermissionHave();
                 } else {
+                    showAsk(bundle);
                     Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                     intent.setData(Uri.parse("package:" + getPackageName()));
                     startActivityForResult(intent, REQUEST_CODE_CTORAGE_11);
-
                 }
             }
             return;
         } else if (bundle.getString(PermissionManager.BUNDLE_KEY_PERMISSIONS, "").equals(PermissionManager.ACTION_MANAGE_WRITE_SETTINGS)) {
+            showAsk(bundle);
             Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
             //这行不能加，否则GG
 //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -55,8 +65,29 @@ public class PermissionActivity extends AppCompatActivity {
             return;
         }
         String[] permissions = bundle.getStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS);
-        if (permissions != null && permissions.length > 0)
+        if (permissions != null && permissions.length > 0) {
+            showAsk(bundle);
             ActivityCompat.requestPermissions(this, permissions, 1001);
+        }
+    }
+
+    private void showAsk(Bundle bundle) {
+        if (!TextUtils.isEmpty(bundle.getString(PermissionManager.INTENT_KEY_ASK, ""))) {
+            if (alertDialog != null) alertDialog.dismiss();
+            alertDialog = null;
+            alertDialog = new AlertDialog.Builder(this)
+                    .setMessage(bundle.getString(PermissionManager.INTENT_KEY_ASK, "")).create();
+            alertDialog.getWindow().setGravity(Gravity.TOP);
+            alertDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            alertDialog.show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(alertDialog!=null)alertDialog.dismiss();
+        alertDialog=null;
     }
 
     @Override
@@ -122,8 +153,8 @@ public class PermissionActivity extends AppCompatActivity {
             }
             return;
         }
-        if(requestCode==REQUEST_CODE_WRITE_SETTINGS&&Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(Settings.System.canWrite(this) ){
+        if (requestCode == REQUEST_CODE_WRITE_SETTINGS && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Settings.System.canWrite(this)) {
                 callbackPermission.onPermissionHave();
             } else {
                 callbackPermission.onPermissionRefuse();

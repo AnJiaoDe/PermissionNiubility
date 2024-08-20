@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_write_setting).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PermissionUtils.checkWRITE_SETTINGS(MainActivity.this,null, new CallbackPermission(MainActivity.this) {
+                PermissionUtils.checkWRITE_SETTINGS(MainActivity.this,"设置权限", new CallbackPermission(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
                         Toast.makeText(MainActivity.this, "WRITE_SETTINGS已获取", Toast.LENGTH_SHORT).show();
