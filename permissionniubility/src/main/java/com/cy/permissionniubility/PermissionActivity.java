@@ -73,10 +73,11 @@ public class PermissionActivity extends AppCompatActivity {
                     break;
                 }
             }
+            ActivityCompat.requestPermissions(this, permissions, 1001);
+            //先弹请求框，再弹说明框，如果先弹说明框，第一次请求权限会无法弹出说明框，原因不明
             //如果选中了不再询问，requestPermissions是不会弹出权限请求框的，故而权限的同步顶部说明页无需显示，
             // 而且如果显示的话，会有从顶部下滑到底部的贼鸡儿丑的动画
             if (!noAskClicked) showAsk(bundle);
-            ActivityCompat.requestPermissions(this, permissions, 1001);
         }
     }
 
