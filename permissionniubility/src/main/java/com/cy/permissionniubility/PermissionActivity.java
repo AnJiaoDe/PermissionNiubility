@@ -66,7 +66,16 @@ public class PermissionActivity extends AppCompatActivity {
         }
         String[] permissions = bundle.getStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS);
         if (permissions != null && permissions.length > 0) {
-            showAsk(bundle);
+            boolean noAskClicked = false;
+            for (String str : permissions) {
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, str)) {
+                    noAskClicked = true;
+                    break;
+                }
+            }
+            //如果选中了不再询问，requestPermissions是不会弹出权限请求框的，故而权限的同步顶部说明页无需显示，
+            // 而且如果显示的话，会有从顶部下滑到底部的贼鸡儿丑的动画
+            if (!noAskClicked) showAsk(bundle);
             ActivityCompat.requestPermissions(this, permissions, 1001);
         }
     }
@@ -86,8 +95,8 @@ public class PermissionActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(alertDialog!=null)alertDialog.dismiss();
-        alertDialog=null;
+        if (alertDialog != null) alertDialog.dismiss();
+        alertDialog = null;
     }
 
     @Override
@@ -102,7 +111,7 @@ public class PermissionActivity extends AppCompatActivity {
                 // 可以推断出用户选择了“不在提示”选项，在这种情况下需要引导用户至设置页手动授权
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
                     finish();
-                    //权限请求失败，但未选中“不再提示”选项
+                    //权限请求失败，选中“不再提示”选项
                     if (callbackPermission != null)
                         callbackPermission.onPermissionNoAsk();
                 } else {
