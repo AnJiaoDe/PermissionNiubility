@@ -16,9 +16,10 @@
         <!--        只有全屏不透明的activity才可以设置横竖屏方向，半透明/对话框等不可设置横竖屏。-->
 
         <!--        这个是SDK8.0的系统Bug，之后的版本已修复。-->
+<!--     singleTop不行   singleInstance防止重复弹出请求框-->
         <activity
             android:name="com.cy.permissionniubility.PermissionActivity"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:theme="@style/PermissionNiubility_TranslucentTheme" />
     </application>
 
