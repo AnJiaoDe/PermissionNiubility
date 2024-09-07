@@ -38,6 +38,4 @@ dependencies {
     testCompileOnly 'junit:junit:4.12'
     androidTestCompileOnly 'androidx.test.ext:junit:1.1.1'
     androidTestCompileOnly 'androidx.test.espresso:espresso-core:3.2.0'
-
-
 }

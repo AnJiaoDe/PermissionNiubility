@@ -9,18 +9,22 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 
 
 /**
@@ -30,15 +34,28 @@ import androidx.core.app.ActivityCompat;
 public class PermissionActivity extends AppCompatActivity {
     private final int REQUEST_CODE_CTORAGE_11 = 100;
     private final int REQUEST_CODE_WRITE_SETTINGS = 101;
-    private AlertDialog alertDialog;
+    //有时候弹不出来，贼鸡儿坑
+//    private AlertDialog alertDialog;
+//    private BaseDialog dialog_toast;
+    private TextView tv_toast;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
         getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        setContentView(R.layout.activity_permission);
+
         Bundle bundle = getIntent().getBundleExtra(PermissionManager.INTENT_KEY_PERMISSIONS);
         if (bundle == null) return;
+        tv_toast = findViewById(R.id.tv);
+        String text = bundle.getString(PermissionManager.INTENT_KEY_ASK, "");
+        if (TextUtils.isEmpty(text)) {
+            tv_toast.setVisibility(View.GONE);
+        } else {
+            tv_toast.setVisibility(View.VISIBLE);
+            tv_toast.setText(text);
+        }
         if (bundle.getString(PermissionManager.BUNDLE_KEY_PERMISSIONS, "").equals(PermissionManager.STORAGE_11)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 // 先判断有没有权限
@@ -49,7 +66,6 @@ public class PermissionActivity extends AppCompatActivity {
                     if (callbackPermission != null)
                         callbackPermission.onPermissionHave();
                 } else {
-                    showAsk(bundle);
                     Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                     intent.setData(Uri.parse("package:" + getPackageName()));
                     startActivityForResult(intent, REQUEST_CODE_CTORAGE_11);
@@ -57,7 +73,6 @@ public class PermissionActivity extends AppCompatActivity {
             }
             return;
         } else if (bundle.getString(PermissionManager.BUNDLE_KEY_PERMISSIONS, "").equals(PermissionManager.ACTION_MANAGE_WRITE_SETTINGS)) {
-            showAsk(bundle);
             Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
             //这行不能加，否则GG
 //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -66,38 +81,8 @@ public class PermissionActivity extends AppCompatActivity {
         }
         String[] permissions = bundle.getStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS);
         if (permissions != null && permissions.length > 0) {
-            boolean noAskClicked = false;
-            for (String str : permissions) {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, str)) {
-                    noAskClicked = true;
-                    break;
-                }
-            }
             ActivityCompat.requestPermissions(this, permissions, 1001);
-            //先弹请求框，再弹说明框，如果先弹说明框，第一次请求权限会无法弹出说明框，原因不明
-            //如果选中了不再询问，requestPermissions是不会弹出权限请求框的，故而权限的同步顶部说明页无需显示，
-            // 而且如果显示的话，会有从顶部下滑到底部的贼鸡儿丑的动画
-            if (!noAskClicked) showAsk(bundle);
         }
-    }
-
-    private void showAsk(Bundle bundle) {
-        if (!TextUtils.isEmpty(bundle.getString(PermissionManager.INTENT_KEY_ASK, ""))) {
-            if (alertDialog != null) alertDialog.dismiss();
-            alertDialog = null;
-            alertDialog = new AlertDialog.Builder(this)
-                    .setMessage(bundle.getString(PermissionManager.INTENT_KEY_ASK, "")).create();
-            alertDialog.getWindow().setGravity(Gravity.TOP);
-            alertDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            alertDialog.show();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (alertDialog != null) alertDialog.dismiss();
-        alertDialog = null;
     }
 
     @Override
