@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onPermissionHave() {
                         Log.e("checkPermission","checkPermission");
-                        PermissionUtils.checkPermission(MainActivity.this,null,
+                        PermissionUtils.checkPermission(MainActivity.this,"存储权限，如果您需要拍照,XXX",
                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 new CallbackPermission(MainActivity.this) {
                             @Override

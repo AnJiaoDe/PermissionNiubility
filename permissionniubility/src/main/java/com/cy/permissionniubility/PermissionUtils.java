@@ -25,6 +25,23 @@ import androidx.core.app.ActivityCompat;
  * @Version: 1.0
  */
 public class PermissionUtils {
+    private static void showDialog(Context context, String text_ask, DialogInterface.OnClickListener onClickListener) {
+        new AlertDialog.Builder(context).setMessage(text_ask).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).setPositiveButton(R.string.to_authorize, onClickListener).show();
+    }
+
+    private static void startRequestPermission(final Context context, String text_ask, final Intent intent) {
+        showDialog(context, text_ask, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                context.startActivity(intent);
+            }
+        });
+    }
 
     public static void checkPermission(final Context context, final String text_ask, final String[] permissions, final CallbackPermission callbackPermission) {
         for (String permission : permissions) {
@@ -39,10 +56,10 @@ public class PermissionUtils {
                     Intent intent = new Intent(context, PermissionActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.STORAGE_11);
-                    bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+//                    bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
                     intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
+                    startRequestPermission(context, text_ask, intent);
                     return;
                 }
             } else if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -50,10 +67,10 @@ public class PermissionUtils {
                 Intent intent = new Intent(context, PermissionActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS, permissions);
-                bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+//                bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
                 intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                startRequestPermission(context, text_ask, intent);
                 return;
             }
         }
@@ -85,11 +102,11 @@ public class PermissionUtils {
                 PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
                 Intent intent = new Intent(context, PermissionActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+//                bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
                 bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.STORAGE_11);
                 intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                startRequestPermission(context,text_ask,intent);
             }
         } else {
             checkPermission(context, text_ask, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, callbackPermission);
@@ -109,11 +126,11 @@ public class PermissionUtils {
             PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
             Intent intent = new Intent(context, PermissionActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+//            bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
             bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.ACTION_MANAGE_WRITE_SETTINGS);
             intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
+            startRequestPermission(context,text_ask,intent);
             return;
         }
         callbackPermission.onPermissionHave();

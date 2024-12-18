@@ -37,25 +37,25 @@ public class PermissionActivity extends AppCompatActivity {
     //有时候弹不出来，贼鸡儿坑
 //    private AlertDialog alertDialog;
 //    private BaseDialog dialog_toast;
-    private TextView tv_toast;
+//    private TextView tv_toast;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
         getWindow().setNavigationBarColor(Color.TRANSPARENT);
-        setContentView(R.layout.activity_permission);
+//        setContentView(R.layout.activity_permission);
 
         Bundle bundle = getIntent().getBundleExtra(PermissionManager.INTENT_KEY_PERMISSIONS);
         if (bundle == null) return;
-        tv_toast = findViewById(R.id.tv);
-        String text = bundle.getString(PermissionManager.INTENT_KEY_ASK, "");
-        if (TextUtils.isEmpty(text)) {
-            tv_toast.setVisibility(View.GONE);
-        } else {
-            tv_toast.setVisibility(View.VISIBLE);
-            tv_toast.setText(text);
-        }
+//        tv_toast = findViewById(R.id.tv);
+//        String text = bundle.getString(PermissionManager.INTENT_KEY_ASK, "");
+//        if (TextUtils.isEmpty(text)) {
+//            tv_toast.setVisibility(View.GONE);
+//        } else {
+//            tv_toast.setVisibility(View.VISIBLE);
+//            tv_toast.setText(text);
+//        }
         if (bundle.getString(PermissionManager.BUNDLE_KEY_PERMISSIONS, "").equals(PermissionManager.STORAGE_11)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 // 先判断有没有权限
