@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -25,6 +26,23 @@ import androidx.core.app.ActivityCompat;
  * @Version: 1.0
  */
 public class PermissionUtils {
+    public static String getApplicationMeta(Context context, String key) {
+        String value = "";
+        try {
+
+            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            if (appInfo == null || appInfo.metaData == null) return value;
+            value = appInfo.metaData.get(key).toString();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+
+    private static String getChannel(Context context) {
+        return getApplicationMeta(context, "CHANNEL");
+    }
+
     private static void showDialog(Context context, String text_ask, DialogInterface.OnClickListener onClickListener) {
         new AlertDialog.Builder(context).setMessage(text_ask).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
@@ -56,7 +74,8 @@ public class PermissionUtils {
                     Intent intent = new Intent(context, PermissionActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.STORAGE_11);
-//                    bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+                    if ("vivo".equals(getChannel(context)))
+                        bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
                     intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startRequestPermission(context, text_ask, intent);
@@ -67,7 +86,8 @@ public class PermissionUtils {
                 Intent intent = new Intent(context, PermissionActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putStringArray(PermissionManager.BUNDLE_KEY_PERMISSIONS, permissions);
-//                bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+                if ("vivo".equals(getChannel(context)))
+                    bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
                 intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startRequestPermission(context, text_ask, intent);
@@ -102,11 +122,12 @@ public class PermissionUtils {
                 PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
                 Intent intent = new Intent(context, PermissionActivity.class);
                 Bundle bundle = new Bundle();
-//                bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+                if ("vivo".equals(getChannel(context)))
+                    bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
                 bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.STORAGE_11);
                 intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startRequestPermission(context,text_ask,intent);
+                startRequestPermission(context, text_ask, intent);
             }
         } else {
             checkPermission(context, text_ask, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, callbackPermission);
@@ -126,11 +147,12 @@ public class PermissionUtils {
             PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
             Intent intent = new Intent(context, PermissionActivity.class);
             Bundle bundle = new Bundle();
-//            bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
+            if ("vivo".equals(getChannel(context)))
+                bundle.putString(PermissionManager.INTENT_KEY_ASK, text_ask);
             bundle.putString(PermissionManager.BUNDLE_KEY_PERMISSIONS, PermissionManager.ACTION_MANAGE_WRITE_SETTINGS);
             intent.putExtra(PermissionManager.INTENT_KEY_PERMISSIONS, bundle);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startRequestPermission(context,text_ask,intent);
+            startRequestPermission(context, text_ask, intent);
             return;
         }
         callbackPermission.onPermissionHave();
