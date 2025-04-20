@@ -56,6 +56,7 @@ public class PermissionUtils {
         showDialog(context, text_ask, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
                 context.startActivity(intent);
             }
         });
