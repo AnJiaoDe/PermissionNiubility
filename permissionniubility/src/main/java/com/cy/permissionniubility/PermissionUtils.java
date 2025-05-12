@@ -33,7 +33,8 @@ public class PermissionUtils {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             if (appInfo == null || appInfo.metaData == null) return value;
             value = appInfo.metaData.get(key).toString();
-        } catch (PackageManager.NameNotFoundException e) {
+            //注意：是Exception，防止没有定义字段而崩溃
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return value;
