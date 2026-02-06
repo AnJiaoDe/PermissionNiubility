@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
@@ -54,6 +55,10 @@ public class PermissionUtils {
     }
 
     private static void startRequestPermission(final Context context, String text_ask, final Intent intent) {
+        if (TextUtils.isEmpty(text_ask)) {
+            context.startActivity(intent);
+            return;
+        }
         showDialog(context, text_ask, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -63,15 +68,65 @@ public class PermissionUtils {
         });
     }
 
-    public static void checkPermission(final Context context, final String text_ask, final String[] permissions, final CallbackPermission callbackPermission) {
+    /**
+     * @param context
+     * @param callbackPermission
+     */
+    public static void requestPicSelect(final Context context, final CallbackPermission callbackPermission) {
+        // > Android 9
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            callbackPermission.onPermissionHave();
+            return;
+        }
+        requestPermission(context, null, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, callbackPermission);
+    }
+
+    /**
+     * //这3个在android 11上面  用isExternalStorageManager判断已经不灵了
+     *
+     * @param permission
+     * @return
+     */
+    public static boolean isStoragePermission(final String permission) {
+        return permission.equals(Manifest.permission_group.STORAGE)
+                || permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                || permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)
+                || permission.equals(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+    }
+
+    public static String replaceWRITE_EXTERNAL_STORAGE(final String permission) {
+        if (isStoragePermission(permission)) {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? Manifest.permission.MANAGE_EXTERNAL_STORAGE : Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        }
+        return permission;
+    }
+
+    public static boolean havePermission(final Context context, final String p) {
+        String permission = replaceWRITE_EXTERNAL_STORAGE(p);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && isStoragePermission(permission)) {
+            return Environment.isExternalStorageManager();
+        }
+        return ActivityCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static boolean havePermissions(final Context context, final String[] permissions) {
         for (String permission : permissions) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                    (permission.equals(Manifest.permission_group.STORAGE)
-                            || permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            || permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)
-                            || permission.equals(Manifest.permission.MANAGE_EXTERNAL_STORAGE))) {
+            if (!havePermission(context, permission)) return false;
+        }
+        return true;
+    }
+
+    public static boolean havePermissionExternalStorage(Context context) {
+        return havePermission(context, Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+    }
+
+    public static void requestPermission(final Context context, final String text_ask, final String[] permissions, @Nullable final CallbackPermission callbackPermission) {
+        for (String permission : permissions) {
+            permission = replaceWRITE_EXTERNAL_STORAGE(permission);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && permission.equals(Manifest.permission.MANAGE_EXTERNAL_STORAGE)) {
                 // 先判断有没有权限
                 if (!Environment.isExternalStorageManager()) {
+//                    LogUtils.log("isExternalStorageManager");
                     PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
                     Intent intent = new Intent(context, PermissionActivity.class);
                     Bundle bundle = new Bundle();
@@ -84,6 +139,8 @@ public class PermissionUtils {
                     return;
                 }
             } else if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+//                LogUtils.log("isExternalStorageManager 11111111");
+
                 PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
                 Intent intent = new Intent(context, PermissionActivity.class);
                 Bundle bundle = new Bundle();
@@ -96,7 +153,7 @@ public class PermissionUtils {
                 return;
             }
         }
-        callbackPermission.onPermissionHave();
+        if (callbackPermission != null) callbackPermission.onPermissionHave();
     }
 
     public static void checknStorageAsk(final Context context, final CallbackPermission callbackPermission) {
@@ -132,19 +189,11 @@ public class PermissionUtils {
                 startRequestPermission(context, text_ask, intent);
             }
         } else {
-            checkPermission(context, text_ask, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, callbackPermission);
+            requestPermission(context, text_ask, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, callbackPermission);
         }
     }
 
-    public static boolean havePermissionExternalStorage(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager())
-            return true;
-        return ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-
-    public static void checkWRITE_SETTINGS(final Context context, String text_ask, final CallbackPermission callbackPermission) {
+    public static void requestWRITE_SETTINGS(final Context context, String text_ask, final CallbackPermission callbackPermission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(context)) {
             PermissionManager.getInstance().setOnPermissionCallback(callbackPermission);
             Intent intent = new Intent(context, PermissionActivity.class);

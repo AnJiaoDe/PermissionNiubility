@@ -22,13 +22,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PermissionUtils.checkPermission(MainActivity.this,"相机权限：如果您需要录像，xxxxx",
+                PermissionUtils.requestPermission(MainActivity.this,"相机权限：如果您需要录像，xxxxx",
                         new String[]{Manifest.permission.CAMERA},
                         new CallbackPermission(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
                         Log.e("checkPermission","checkPermission");
-                        PermissionUtils.checkPermission(MainActivity.this,"存储权限，如果您需要拍照,XXX",
+                        PermissionUtils.requestPermission(MainActivity.this,"存储权限，如果您需要拍照,XXX",
                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 new CallbackPermission(MainActivity.this) {
                             @Override
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_write_setting).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PermissionUtils.checkWRITE_SETTINGS(MainActivity.this,"设置权限", new CallbackPermission(MainActivity.this) {
+                PermissionUtils.requestWRITE_SETTINGS(MainActivity.this,"设置权限", new CallbackPermission(MainActivity.this) {
                     @Override
                     public void onPermissionHave() {
                         Toast.makeText(MainActivity.this, "WRITE_SETTINGS已获取", Toast.LENGTH_SHORT).show();
